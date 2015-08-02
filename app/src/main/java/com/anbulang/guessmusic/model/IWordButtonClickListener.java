@@ -8,8 +8,8 @@ public interface IWordButtonClickListener {
 
     /**
      * WordButton 点击响应事件
-     * @param wordButton
+     * @param wordButton 被点击按钮模型
      */
-    void onWordButtonOnClick(WordButton wordButton);
+    void onWordButtonClick(WordButton wordButton);
 
 }

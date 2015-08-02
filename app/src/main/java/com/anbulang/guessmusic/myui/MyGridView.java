@@ -2,7 +2,6 @@ package com.anbulang.guessmusic.myui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -14,18 +13,20 @@ import android.widget.GridView;
 import com.anbulang.guessmusic.R;
 import com.anbulang.guessmusic.model.IWordButtonClickListener;
 import com.anbulang.guessmusic.model.WordButton;
+import com.anbulang.guessmusic.util.Logger;
 import com.anbulang.guessmusic.util.Util;
 
 import java.util.ArrayList;
 
 /**
+ * 自定义网格View
  * Created by Chaucer on 2015/6/30.
  */
 public class MyGridView extends GridView {
 
     public static final int COUNTS_WORDS = 24;
 
-    // Log
+    // Logger
     protected static final String TAG = "MyGridView";
 
     // The list of storing wordButtons
@@ -80,7 +81,6 @@ public class MyGridView extends GridView {
         @Override
         public View getView(final int pos, View v, ViewGroup viewGroup) {
             final WordButton holder;
-
             if (v == null) {
                 v = Util.getView(mContext, R.layout.mygridview_item);
                 holder = mWordButtonList.get(pos);
@@ -89,13 +89,16 @@ public class MyGridView extends GridView {
                 // 设置动画的延迟时间
                 mScaleAnimation.setStartOffset(pos * 100);
                 holder.setIndex(pos);
-                holder.setViewButton((Button) v.findViewById(R.id.item_btn));
-                holder.getViewButton().setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mWordButtonClickListener.onWordButtonOnClick(holder);
-                    }
-                });
+                if (holder.getViewButton() == null) {
+                    holder.setViewButton((Button) v.findViewById(R.id.item_btn));
+                    Logger.i(TAG, pos + "");
+                    holder.getViewButton().setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mWordButtonClickListener.onWordButtonClick(holder);
+                        }
+                    });
+                }
                 v.setTag(holder);
             } else {
                 holder = (WordButton) v.getTag();
