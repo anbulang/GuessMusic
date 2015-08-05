@@ -26,13 +26,25 @@ import com.anbulang.guessmusic.util.Util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends Activity implements IWordButtonClickListener{
 
     // Logger
     private static final String TAG = "MainActivity";
+
+    // 答案状态
+    public final static int ANSWER_RIGHT = 1;
+    public final static int ANSWER_WRONG = 2;
+    public final static int ANSWER_INCOMPLETE = 3;
+
+    // TIMER CONSTANT
+    private static final long DURING_TIME = 150;
+    private static final long BLIND_TIME = 7;
 
     // drawable 元素
     private ImageView mRecordView;
@@ -152,7 +164,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener{
 
             }
         });
-        
+
         // 初始化游戏数据
         initCurrentStageDate();
     }
@@ -354,6 +366,68 @@ public class MainActivity extends Activity implements IWordButtonClickListener{
                 break;
             }
         }
+
+        // 检测文字状态
+        int answerStatus = checkTheAnswer();
+        switch (answerStatus) {
+            case ANSWER_RIGHT:
+                // 答案正确-->过关
+                Toast.makeText(this, "PASS ^-^ ", Toast.LENGTH_SHORT).show();
+                break;
+            case ANSWER_WRONG:
+                // 答案错误-->答案闪烁
+                blindYourEyes();
+                break;
+            case ANSWER_INCOMPLETE:
+                // 答案不完整-->do nothing
+                break;
+        }
+    }
+
+    private void blindYourEyes() {
+        // Timer Task provided by Java API
+        TimerTask task = new TimerTask() {
+            boolean isRed = false;
+            int blindCount = 0;
+
+            @Override
+            public void run() {
+                // To flush UI in UI thread
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (++blindCount > BLIND_TIME)
+                            return;
+                        for (int i = 0; i < mSelectedWords.size(); i++) {
+                            mSelectedWords.get(i).getViewButton().setTextColor(
+                                    isRed ? Color.RED : Color.WHITE
+                            );
+                        }
+                        isRed = !isRed;
+                    }
+                });
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, new Date(), DURING_TIME);
+    }
+
+    /**
+     * Check the answer and return the status code
+     * @return status code defined at top of this class
+     */
+    private int checkTheAnswer() {
+        StringBuffer answer = new StringBuffer();
+        for (int i = 0; i < mSelectedWords.size(); i++) {
+            // 如果有空的，说明答案还不完整
+            String word = mSelectedWords.get(i).getWordString();
+            if ("".equals(word)) {
+                return ANSWER_INCOMPLETE;
+            }
+            answer.append(word);
+        }
+        return answer.toString().equals(mCurrentSong.getSongName()) ?
+                ANSWER_RIGHT : ANSWER_WRONG;
     }
 
     /**
