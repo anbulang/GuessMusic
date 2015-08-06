@@ -20,4 +20,10 @@
 
     </LinearLayout>
 
+    <!-- Float buttons -->
+    <include layout="@layout/float_buttons" />
+
+    <!--UI of passing barier-->
+    <include layout="@layout/pass_view" />
+
 </FrameLayout>

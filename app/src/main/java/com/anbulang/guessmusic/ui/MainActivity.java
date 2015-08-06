@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.anbulang.guessmusic.R;
 import com.anbulang.guessmusic.data.Const;
@@ -72,6 +71,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener{
     // 已选择文字框布局
     private LinearLayout mSelectedWordsContainer;
 
+    // 通关界面
+    private LinearLayout mPassView;
+
     // 当前歌曲
     private Song mCurrentSong;
     // 当前关的索引
@@ -86,6 +88,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener{
         mMyGridView = (MyGridView) findViewById(R.id.gridview);
         mMyGridView.setOnWordButtonClickListener(this);
         mSelectedWordsContainer = (LinearLayout) findViewById(R.id.word_select_container);
+
+        // 初始化通关界面
+        mPassView = (LinearLayout) findViewById(R.id.pass_view);
 
         // 播放按钮，并设置点击监听事件
         mPlayButton = (ImageButton) findViewById(R.id.btn_play);
@@ -372,7 +377,8 @@ public class MainActivity extends Activity implements IWordButtonClickListener{
         switch (answerStatus) {
             case ANSWER_RIGHT:
                 // 答案正确-->过关
-                Toast.makeText(this, "PASS ^-^ ", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "PASS ^-^ ", Toast.LENGTH_SHORT).show();
+                mPassView.setVisibility(View.VISIBLE);
                 break;
             case ANSWER_WRONG:
                 // 答案错误-->答案闪烁
